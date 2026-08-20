@@ -1,4 +1,17 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Villupuram Taxi
+
+Phase 2 design foundation and conversion-focused homepage for a client taxi service in Villupuram, Tamil Nadu.
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+Copy `.env.example` to `.env.local` and replace the placeholder site origin before deployment.
+
+Business identity, phone, WhatsApp, rates, operating policies, trust statements and review content remain provisional pending client approval. Central identity values live in `src/config/site.ts`; homepage content lives in `src/data/content.ts`.
 
 ## Getting Started
 

@@ -1,0 +1,7 @@
+import { siteConfig } from "@/config/site";
+import type { BreadcrumbItem } from "@/components/shared/breadcrumbs";
+// Deliberately omits ratings, prices, telephone and hours until the client confirms them.
+export function createTaxiServiceSchema() { return { "@context": "https://schema.org", "@type": "TaxiService", name: siteConfig.businessName, areaServed: "Villupuram", address: { "@type": "PostalAddress", addressLocality: "Villupuram", addressRegion: "Tamil Nadu", addressCountry: "IN" } }; }
+export function createBreadcrumbSchema(items: BreadcrumbItem[]) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.label, ...(item.href ? { item: new URL(item.href, siteConfig.url).toString() } : {}) })) }; }
+export function createServiceSchema({ name, description, path, areaServed }: { name: string; description: string; path: string; areaServed?: string[] }) { return { "@context": "https://schema.org", "@type": "Service", name, description, url: new URL(path, siteConfig.url).toString(), provider: { "@type": "TaxiService", name: siteConfig.businessName }, ...(areaServed?.length ? { areaServed } : {}) }; }
+export function createFaqSchema(items: { question: string; answer: string }[]) { return { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: items.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) }; }
