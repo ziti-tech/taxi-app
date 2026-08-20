@@ -41,6 +41,8 @@ button, input, select { font: inherit; }
 .hero-word-four { animation-delay: 1.05s; }
 .hero-heading-line { display: inline; }
 .hero-device-video { clip-path: inset(39% 0 0 0); }
+.taxi-loader-car { animation: taxi-loader-drive 4.8s cubic-bezier(.45,.05,.35,1) infinite; }
+.taxi-loader-route { transform-origin: left; animation: taxi-loader-route 4.8s ease-in-out infinite; }
 @keyframes hero-grid-drift { to { transform: translateX(-80px); } }
 @keyframes hero-road-drift { to { transform: translateX(-90px); } }
 @keyframes hero-route-draw { 0%, 8% { stroke-dashoffset: 1500; opacity: 0; } 18% { opacity: .85; } 72% { stroke-dashoffset: 0; opacity: .8; } 92%, 100% { stroke-dashoffset: -280; opacity: 0; } }
@@ -48,11 +50,13 @@ button, input, select { font: inherit; }
 @keyframes hero-wheel-spin { to { rotate: 1turn; } }
 @keyframes hero-pin-appear { 0%, 25% { opacity: 0; } 34%, 72% { opacity: .8; } 86%, 100% { opacity: 0; } }
 @keyframes hero-word-reveal { 0%, 4% { opacity: 0; transform: translateY(18px); } 12%, 86% { opacity: 1; transform: translateY(0); } 95%, 100% { opacity: 0; transform: translateY(-5px); } }
+@keyframes taxi-loader-drive { 0% { transform: translateX(-3rem); opacity: 0; } 12% { opacity: 1; } 82% { opacity: 1; } 100% { transform: translateX(calc(100vw - 1rem)); opacity: 0; } }
+@keyframes taxi-loader-route { 0% { transform: scaleX(0); opacity: 0; } 20% { opacity: 1; } 72% { transform: scaleX(1); opacity: .8; } 100% { transform: scaleX(1); opacity: 0; } }
 @media (max-width: 767px) { .hero-motion svg { opacity: .52; transform: translateX(-17%); width: 140%; } }
 @media (min-width: 768px) and (max-width: 1279px) { .hero-device-video { clip-path: inset(37% 0 0 0); } }
 @media (min-width: 1280px) { .hero-heading-line { display: block; } .hero-motion > svg { opacity: .22; } .hero-device-video { clip-path: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .hero-grid, .hero-road-lines, .hero-route-glow, .hero-taxi, .hero-wheel, .hero-pin, .hero-word { animation: none; }
+  .hero-grid, .hero-road-lines, .hero-route-glow, .hero-taxi, .hero-wheel, .hero-pin, .hero-word, .taxi-loader-car, .taxi-loader-route { animation: none; }
   .hero-video-scene, .hero-top-video { display: none !important; }
   .hero-route-glow { stroke-dashoffset: 0; opacity: .45; }
   .hero-taxi { transform: translate(575px, 575px) scale(.72); opacity: .7; }
