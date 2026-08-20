@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LocateFixed, MapPin, Plane, Repeat2, Route, Search, UsersRound } from "lucide-react";
+import { CarFront, LocateFixed, MapPin, Repeat2, Route, Search, UsersRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { createTripSchema, type TripFormValues } from "@/schemas/booking";
 import { cn } from "@/lib/utils";
 import { DateTimePickerField } from "./date-time-picker-field";
-const tabs = [{ id: "one-way", label: "One way", icon: Route }, { id: "round-trip", label: "Round trip", icon: Repeat2 }, { id: "airport", label: "Airport", icon: Plane }] as const;
+const tabs = [{ id: "one-way", label: "One way", icon: Route }, { id: "round-trip", label: "Round trip", icon: Repeat2 }, { id: "outstation", label: "Outstation", icon: CarFront }] as const;
 
 function Field({ label, error, icon: Icon, children }: { label: string; error?: string; icon: typeof MapPin; children: React.ReactNode }) {
   return <label className="block min-w-0"><span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[.08em] text-muted">{label}</span><span className="relative block min-w-0"><Icon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-navy-800" size={18} />{children}</span>{error && <span className="mt-1.5 block text-xs font-bold text-danger">{error}</span>}</label>;

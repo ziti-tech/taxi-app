@@ -1,13 +1,13 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plane, Repeat2, Route, UsersRound } from "lucide-react";
+import { CarFront, Repeat2, Route, UsersRound } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { createTripSchema, type TripFormValues } from "@/schemas/booking";
 import type { TripDetails } from "@/types/booking";
 import { cn } from "@/lib/utils";
 import { LocationField } from "./location-field";
 import { DateTimePickerField } from "./date-time-picker-field";
-const tabs = [{ id: "one-way", label: "One way", icon: Route }, { id: "round-trip", label: "Round trip", icon: Repeat2 }, { id: "airport", label: "Airport", icon: Plane }] as const;
+const tabs = [{ id: "one-way", label: "One way", icon: Route }, { id: "round-trip", label: "Round trip", icon: Repeat2 }, { id: "outstation", label: "Outstation", icon: CarFront }] as const;
 function NativeField({ label, error, icon: Icon, children }: { label: string; error?: string; icon: typeof UsersRound; children: React.ReactNode }) { return <label className="block min-w-0"><span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[.08em] text-muted">{label}</span><span className="relative block min-w-0"><Icon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-navy-800" size={18}/>{children}</span>{error && <span className="mt-1.5 block text-xs font-bold text-danger">{error}</span>}</label>; }
 export function TripStep({ initial, onContinue }: { initial: Partial<TripDetails> | null; onContinue: (trip: TripDetails) => void }) {
   const { register, control, handleSubmit, getValues, setValue, formState: { errors } } = useForm<TripFormValues>({ resolver: zodResolver(createTripSchema()), defaultValues: { tripType: initial?.tripType ?? "one-way", pickup: initial?.pickup ?? "", drop: initial?.drop ?? "", date: initial?.date ?? "", time: initial?.time ?? "", returnDate: initial?.returnDate ?? "", returnTime: initial?.returnTime ?? "", passengers: initial?.passengers ?? 1 } }); const tripType = useWatch({ control, name: "tripType" });

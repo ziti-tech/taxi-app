@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Car } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
 export function HeroMotionBackground() {
   const [videoReady, setVideoReady] = useState(false);
+  const connectVideo = useCallback((video: HTMLVideoElement | null) => {
+    if (!video) return;
+    if (video.readyState >= 2) setVideoReady(true);
+    else {
+      video.load();
+      void video.play().catch(() => undefined);
+    }
+  }, []);
 
   return (
     <div className="hero-motion pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -65,7 +73,7 @@ export function HeroMotionBackground() {
         </g>
       </svg>
       <div className="hero-video-scene absolute inset-0 hidden overflow-hidden xl:block">
-        <video className={`hero-device-video absolute left-1/2 top-[9rem] h-auto w-[48rem] max-w-none -translate-x-1/2 transition-opacity duration-700 md:top-[7rem] md:w-[72rem] xl:inset-0 xl:size-full xl:translate-x-0 xl:object-cover xl:object-center ${videoReady ? "opacity-100 xl:opacity-70" : "opacity-0"}`} autoPlay muted loop playsInline preload="auto" tabIndex={-1} onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)}>
+        <video ref={connectVideo} className={`hero-device-video absolute left-1/2 top-[9rem] h-auto w-[48rem] max-w-none -translate-x-1/2 transition-opacity duration-700 md:top-[7rem] md:w-[72rem] xl:inset-0 xl:size-full xl:translate-x-0 xl:object-cover xl:object-center ${videoReady ? "opacity-100 xl:opacity-70" : "opacity-0"}`} autoPlay muted loop playsInline preload="auto" tabIndex={-1} onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)}>
           <source src="/media/taxi-hero/taxi-hero.mp4" type="video/mp4" media="(min-width: 1280px)" />
         </video>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#061d33_0%,#061d33_24%,rgba(6,29,51,.04)_47%,rgba(6,29,51,.18)_82%,rgba(6,29,51,.56)_100%)] md:bg-[linear-gradient(180deg,#061d33_0%,#061d33_20%,rgba(6,29,51,.04)_45%,rgba(6,29,51,.30)_100%)] xl:bg-[linear-gradient(90deg,#061d33_0%,rgba(6,29,51,.98)_30%,rgba(6,29,51,.58)_58%,rgba(6,29,51,.24)_100%),linear-gradient(180deg,#061d33_0%,rgba(6,29,51,.82)_24%,transparent_58%,rgba(6,29,51,.28)_100%)]" />
@@ -78,6 +86,14 @@ export function HeroMotionBackground() {
 
 export function HeroTopVideo() {
   const [videoReady, setVideoReady] = useState(false);
+  const connectVideo = useCallback((video: HTMLVideoElement | null) => {
+    if (!video) return;
+    if (video.readyState >= 2) setVideoReady(true);
+    else {
+      video.load();
+      void video.play().catch(() => undefined);
+    }
+  }, []);
 
   return <div className={`hero-top-video relative mb-7 aspect-video w-full overflow-hidden rounded-2xl border shadow-[0_14px_38px_rgba(0,8,18,.24)] transition-colors duration-700 xl:hidden ${videoReady ? "border-white/10 bg-navy-950" : "border-amber-500/20 bg-[#0b2f4b]"}`} aria-hidden="true">
     <div className={`absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(251,191,36,.18),rgba(11,47,75,.35)_36%,rgba(6,29,51,.92)_78%)] transition-opacity duration-700 ${videoReady ? "opacity-0" : "animate-pulse opacity-100"}`} />
@@ -98,8 +114,8 @@ export function HeroTopVideo() {
         </div>
       </div>
     </div>
-    <video className={`absolute inset-0 size-full object-contain transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`} autoPlay muted loop playsInline preload="auto" tabIndex={-1} onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)}>
-      <source src="/media/taxi-hero/taxi-hero.mp4" type="video/mp4" media="(max-width: 1279px)" />
+    <video ref={connectVideo} className={`absolute inset-0 size-full object-contain transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`} autoPlay muted loop playsInline preload="auto" tabIndex={-1} onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)}>
+      <source src="/media/taxi-hero/taxi-hero.mp4" type="video/mp4" />
     </video>
     <div className="absolute inset-0 bg-gradient-to-b from-navy-950/25 via-transparent to-navy-950/20" />
     <span className="absolute bottom-2.5 right-2.5 rounded-full border border-white/10 bg-navy-950/95 px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-[.1em] text-amber-500 shadow-lg sm:bottom-3 sm:right-3 sm:px-3 sm:text-[10px]">{siteConfig.shortName}</span>

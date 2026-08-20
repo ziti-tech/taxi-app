@@ -5,7 +5,7 @@ import { normalizeIndianMobile } from "@/lib/booking/phone";
 
 const normalizeLocation = (value: string) => value.trim().toLocaleLowerCase("en-IN").replace(/\s+/g, " ");
 export function createTripSchema(now = new Date()) { return z.object({
-  tripType: z.enum(["one-way", "round-trip", "airport"]), pickup: z.string().trim().min(2, "Enter a pickup location"), drop: z.string().trim().min(2, "Enter a drop location"),
+  tripType: z.enum(["one-way", "round-trip", "outstation"]), pickup: z.string().trim().min(2, "Enter a pickup location"), drop: z.string().trim().min(2, "Enter a drop location"),
   date: z.string().min(1, "Choose a pickup date"), time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a valid pickup time"), returnDate: z.string().optional(), returnTime: z.string().optional(),
   passengers: z.number().int().min(bookingConfig.minPassengers).max(bookingConfig.maxPassengers),
 }).superRefine((value, ctx) => {

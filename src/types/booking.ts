@@ -1,4 +1,4 @@
-export type TripType = "one-way" | "round-trip" | "airport";
+export type TripType = "one-way" | "round-trip" | "outstation";
 export type TripDetails = { tripType: TripType; pickup: string; drop: string; date: string; time: string; returnDate?: string; returnTime?: string; passengers: number };
 export type PassengerDetails = { fullName: string; mobile: string; email?: string; pickupNote?: string };
 export type Money = { amount: number; currency: "INR" };
