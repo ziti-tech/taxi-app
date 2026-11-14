@@ -5,16 +5,17 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { WhatsAppAction } from "@/components/layout/whatsapp-action";
 import { siteConfig } from "@/config/site";
+import { createMetadata } from "@/lib/metadata";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
+const title = `${siteConfig.businessName} | Taxi booking in Villupuram`;
+const description = "Request one-way, round-trip and outstation taxis from Villupuram. Choose your route and vehicle, then contact the operator to confirm your fare and ride.";
 export const metadata: Metadata = {
+  ...createMetadata({ title, description, path: "/" }),
   metadataBase: new URL(siteConfig.url),
   applicationName: siteConfig.businessName,
-  title: { default: `${siteConfig.businessName} | One-way & outstation rides`, template: `%s | ${siteConfig.shortName}` },
-  description: "Request one-way, round-trip and airport taxis from Villupuram with a simple, comfortable booking experience.",
-  alternates: { canonical: "/" },
-  openGraph: { title: siteConfig.businessName, description: "Reliable local and outstation taxi booking from Villupuram.", url: "/", siteName: siteConfig.shortName, locale: "en_IN", type: "website" },
+  title: { default: title, template: `%s | ${siteConfig.shortName}` },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" className={manrope.variable}><body className="font-sans antialiased">

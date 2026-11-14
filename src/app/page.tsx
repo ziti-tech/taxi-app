@@ -1,17 +1,13 @@
 import { BookingProvider } from "@/components/booking/booking-context";
 import { InlineBookingFlow } from "@/components/booking/inline-booking-flow";
 import { FinalCta, FleetSection, Hero, RoutesSection, TrustStrip } from "@/components/home/home-sections";
+import { HomeStructuredData } from "@/components/seo/home-structured-data";
 
-export default async function Home({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const values = await searchParams;
-  const params = new URLSearchParams();
-  Object.entries(values).forEach(([key, value]) => {
-    if (typeof value === "string") params.set(key, value);
-  });
-
+export default function Home() {
   return (
-    <BookingProvider initialQuery={params.toString()}>
+    <BookingProvider>
       <main id="main-content">
+        <HomeStructuredData />
         <Hero />
         <InlineBookingFlow />
         <TrustStrip />

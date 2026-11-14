@@ -1,6 +1,23 @@
-import { CheckCircle2, Clock3, Phone } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { BookingSummary } from "./booking-summary";
-import { phoneHref, whatsappHref } from "@/config/site";
-import type { BookingDraft, BookingReference } from "@/types/booking";
-export function ConfirmationStep({ draft, result, onNewBooking }: { draft: BookingDraft; result: BookingReference; onNewBooking: () => void }) { return <section aria-labelledby="confirmation-title" className="text-center"><span className="mx-auto grid size-16 place-items-center rounded-full bg-[#edf7f1] text-success"><CheckCircle2 size={34}/></span><p className="eyebrow mt-5">Request received</p><h2 id="confirmation-title" tabIndex={-1} className="mt-2 text-3xl font-extrabold tracking-tight text-navy-950">Booking request received</h2><p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">This development request is awaiting operator confirmation. It is not a confirmed taxi booking.</p><div className="mx-auto mt-6 max-w-md rounded-2xl border border-amber-500 bg-[#fffaf0] p-5"><p className="text-xs font-extrabold uppercase tracking-wider text-muted">Development reference</p><p className="mt-2 break-all text-2xl font-extrabold tracking-wider text-navy-950">{result.reference}</p><p className="mt-2 flex items-center justify-center gap-2 text-sm font-bold text-amber-600"><Clock3 size={16}/>Awaiting confirmation</p></div><div className="mx-auto mt-6 max-w-md text-left"><BookingSummary draft={draft}/>{draft.passenger && <div className="mt-3 rounded-2xl border border-line bg-white p-5"><p className="text-xs font-extrabold uppercase tracking-[.12em] text-muted">Contact</p><p className="mt-3 text-sm font-extrabold text-navy-950">{draft.passenger.fullName}</p><p className="mt-1 text-sm text-muted">{draft.passenger.mobile}</p>{draft.passenger.email && <p className="mt-1 break-words text-sm text-muted">{draft.passenger.email}</p>}</div>}</div><div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><button type="button" onClick={onNewBooking} className="btn btn-primary">Back to trip form</button><a href={phoneHref} className="btn border border-line bg-white text-navy-900"><Phone size={18}/>Call</a>{whatsappHref && <a href={whatsappHref} className="btn border border-line bg-white text-navy-900"><FaWhatsapp size={18}/>WhatsApp</a>}</div></section>; }
+import { phoneHref } from "@/config/site";
+import type { BookingDraft } from "@/types/booking";
+import type { WhatsAppHandoff } from "@/lib/booking/whatsapp-handoff";
+
+export function ConfirmationStep({ draft, result, onNewBooking, onEdit }: { draft: BookingDraft; result: WhatsAppHandoff; onNewBooking: () => void; onEdit: () => void }) {
+  return <section aria-labelledby="confirmation-title" className="text-center">
+    <span className="mx-auto grid size-16 place-items-center rounded-full bg-[#edf7f1] text-success"><MessageCircle aria-hidden="true" size={34} /></span>
+    <p className="eyebrow mt-5">Ready to send</p>
+    <h2 id="confirmation-title" tabIndex={-1} className="mt-2 text-3xl font-extrabold tracking-tight text-navy-950">Your WhatsApp enquiry is ready</h2>
+    <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">Review the message in WhatsApp and tap <strong>Send</strong>. Your enquiry has not been sent by this website. The operator will confirm the fare and availability before your ride is booked.</p>
+    <a href={result.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-6"><FaWhatsapp aria-hidden="true" size={20} />Open WhatsApp to send enquiry</a>
+    <p className="mt-3 text-xs leading-5 text-muted">If WhatsApp did not open, use the button above or call us.</p>
+    <div className="mx-auto mt-6 max-w-md text-left"><BookingSummary draft={draft} /></div>
+    <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+      <button type="button" onClick={onEdit} className="btn border border-line bg-white text-navy-900">Edit enquiry</button>
+      <button type="button" onClick={onNewBooking} className="btn border border-line bg-white text-navy-900">Back to trip form</button>
+      <a href={phoneHref} className="btn border border-line bg-white text-navy-900"><Phone aria-hidden="true" size={18} />Call</a>
+    </div>
+  </section>;
+}

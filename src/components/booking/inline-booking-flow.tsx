@@ -2,8 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
-import { BookingFlow } from "./booking-flow";
+import dynamic from "next/dynamic";
 import { useBooking } from "./booking-context";
+
+const BookingFlow = dynamic(() => import("./booking-flow").then((module) => module.BookingFlow), {
+  loading: () => <div className="container-site py-12" role="status">Preparing your booking form…</div>,
+});
 
 export function InlineBookingFlow() {
   const { request, closeBooking, syncDraft } = useBooking();
@@ -15,7 +19,10 @@ export function InlineBookingFlow() {
 
   function returnToForm() {
     closeBooking();
-    requestAnimationFrame(() => document.getElementById("booking-widget-title")?.focus());
+    requestAnimationFrame(() => {
+      document.getElementById("book")?.scrollIntoView({ block: "start" });
+      document.getElementById("booking-widget-title")?.focus({ preventScroll: true });
+    });
   }
 
   if (!request) return null;

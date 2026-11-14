@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Phone } from "lucide-react";
 
 export function SwipeToCall({ href, phone }: { href: string; phone: string }) {
@@ -10,6 +10,10 @@ export function SwipeToCall({ href, phone }: { href: string; phone: string }) {
   const startRef = useRef(0);
   const offsetRef = useRef(0);
   const draggingRef = useRef(false);
+  const suppressClickRef = useRef(false);
+  const callingRef = useRef(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
   const [dragging, setDragging] = useState(false);
   const [completed, setCompleted] = useState(false);
 
@@ -19,7 +23,15 @@ export function SwipeToCall({ href, phone }: { href: string; phone: string }) {
     if (handleRef.current) handleRef.current.style.transform = `translate3d(${value}px,0,0)`;
     if (fillRef.current) fillRef.current.style.width = `${value + 48}px`;
   };
-  const call = () => { setCompleted(true); setDragging(false); window.setTimeout(() => updateOffset(0), 140); window.setTimeout(() => { setCompleted(false); window.location.href = href; }, 420); };
+  const call = () => {
+    if (callingRef.current) return;
+    callingRef.current = true;
+    setCompleted(true);
+    setDragging(false);
+    updateOffset(0);
+    window.location.href = href;
+    timeoutRef.current = setTimeout(() => { callingRef.current = false; setCompleted(false); }, 1200);
+  };
 
   return <div className="mt-5 w-full min-w-0 rounded-2xl border border-white/15 bg-navy-950/75 p-2.5 shadow-[0_12px_35px_rgba(0,8,18,.18)] backdrop-blur-md sm:p-3">
     <p className="text-center text-[10px] font-extrabold uppercase tracking-[.11em] text-white/60 sm:text-[11px]">Need a taxi? Call us now</p>
@@ -33,15 +45,16 @@ export function SwipeToCall({ href, phone }: { href: string; phone: string }) {
       <button
         ref={handleRef}
         type="button"
-        aria-label={`Swipe to call ${phone}`}
-        onPointerDown={(event) => { startRef.current = event.clientX - offsetRef.current; draggingRef.current = true; setDragging(true); event.currentTarget.setPointerCapture(event.pointerId); }}
-        onPointerMove={(event) => { if (!draggingRef.current) return; const next = Math.min(maximumOffset(), Math.max(0, event.clientX - startRef.current)); updateOffset(next); }}
+        aria-label={`Call ${phone}. Tap or swipe to call`}
+        onPointerDown={(event) => { startRef.current = event.clientX - offsetRef.current; suppressClickRef.current = false; draggingRef.current = true; setDragging(true); event.currentTarget.setPointerCapture(event.pointerId); }}
+        onPointerMove={(event) => { if (!draggingRef.current) return; const next = Math.min(maximumOffset(), Math.max(0, event.clientX - startRef.current)); if (next > 6) suppressClickRef.current = true; updateOffset(next); }}
         onPointerUp={() => { const max = maximumOffset(); draggingRef.current = false; setDragging(false); if (max > 0 && offsetRef.current >= max * .68) call(); else window.requestAnimationFrame(() => updateOffset(0)); }}
         onPointerCancel={() => { draggingRef.current = false; setDragging(false); window.requestAnimationFrame(() => updateOffset(0)); }}
-        onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); call(); } }}
+        onClick={() => { if (!suppressClickRef.current) call(); }}
+        onLostPointerCapture={() => { draggingRef.current = false; setDragging(false); updateOffset(0); }}
         className={`relative z-10 grid size-10 shrink-0 touch-none place-items-center rounded-full border border-amber-500 bg-navy-950 text-amber-500 shadow-[0_5px_18px_rgba(0,0,0,.28)] will-change-transform focus-visible:outline-offset-2 ${dragging ? "cursor-grabbing" : "cursor-grab transition-transform duration-300 ease-out"}`}
       ><Phone size={19}/></button>
     </div>
-    <p className="mt-1.5 text-center text-[9px] font-bold uppercase tracking-[.12em] text-white/45">Swipe to call</p>
+    <p className="mt-1.5 text-center text-[9px] font-bold uppercase tracking-[.12em] text-white/45">Tap or swipe to call</p>
   </div>;
 }

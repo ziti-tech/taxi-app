@@ -18,28 +18,38 @@ type BookingContextValue = {
 
 const BookingContext = createContext<BookingContextValue | null>(null);
 
-export function BookingProvider({ initialQuery, children }: { initialQuery: string; children: React.ReactNode }) {
+export function BookingProvider({ initialQuery, children }: { initialQuery?: string; children: React.ReactNode }) {
   const [selection, setSelection] = useState<Selection>(() => {
-    const params = new URLSearchParams(initialQuery);
+    const params = new URLSearchParams(initialQuery ?? "");
     return { prefill: parseTripPrefill(params), vehicleId: parsePreferredVehicle(params), revision: 0 };
   });
   const [request, setRequest] = useState<BookingRequest | null>(null);
 
   useEffect(() => {
     let active = true;
-    void Promise.resolve().then(() => {
+    let lastQuery: string | null = null;
+    function restore() {
       if (!active) return;
-      try {
-        const stored = parseStoredDraft(sessionStorage.getItem(bookingConfig.storageKey));
-        if (stored.trip) setSelection((previous) => ({
-          prefill: { ...stored.trip, ...previous.prefill },
-          vehicleId: previous.vehicleId ?? stored.vehicleId,
-          revision: previous.revision + 1,
-        }));
-      } catch { /* The form remains usable when browser storage is unavailable. */ }
-    });
-    return () => { active = false; };
-  }, []);
+      const query = window.location.search;
+      if (query === lastQuery) return;
+      const changed = lastQuery !== null;
+      lastQuery = query;
+      const params = new URLSearchParams(query || initialQuery);
+      let stored = parseStoredDraft(null);
+      try { stored = parseStoredDraft(sessionStorage.getItem(bookingConfig.storageKey)); } catch { /* Storage is optional. */ }
+      const prefill = parseTripPrefill(params);
+      const preferredVehicle = parsePreferredVehicle(params);
+      setSelection((previous) => ({
+        prefill: { ...stored.trip, ...prefill },
+        vehicleId: preferredVehicle ?? stored.vehicleId,
+        revision: previous.revision + 1,
+      }));
+      if (changed) setRequest(null);
+    }
+    void Promise.resolve().then(restore);
+    window.addEventListener("popstate", restore);
+    return () => { active = false; window.removeEventListener("popstate", restore); };
+  }, [initialQuery]);
 
   const syncDraft = useCallback((draft: BookingDraft) => {
     if (!draft.trip) return;

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#071a2e"/>
+  <path d="M0 550h1200M0 564h1200" stroke="#123a60" stroke-width="2"/>
+  <path d="M70 560h180m120 0h180m120 0h180m120 0h180" stroke="#f4b41a" stroke-width="5"/>
+  <rect x="72" y="72" width="96" height="96" rx="24" fill="#f4b41a"/>
+  <g transform="translate(88 88)" fill="none" stroke="#071a2e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m15 29 4-11h26l4 11M15 29h34v16H15zM20 45v5m24-5v5M15 29l-5-3m39 3 5-3"/>
+    <path d="M20 36h4m16 0h4M25 18v-4h14v4"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="72" y="274" fill="#fff" font-size="76" font-weight="700">namma oneway</text>
+    <text x="72" y="364" fill="#f4b41a" font-size="76" font-weight="700">drop taxi</text>
+    <text x="76" y="432" fill="#d8e1eb" font-size="30">One way · Round trip · Outstation</text>
+    <text x="76" y="486" fill="#d8e1eb" font-size="25">Villupuram, Tamil Nadu</text>
+  </g>
+</svg>

@@ -1,18 +1,18 @@
 import { z } from "zod";
 import { bookingConfig } from "@/config/booking";
-import { isAfterLocalDateTime, isPastLocalDateTime } from "@/lib/booking/date-time";
+import { isAfterLocalDateTime, isPastLocalDateTime, isValidDateString } from "@/lib/booking/date-time";
 import { normalizeIndianMobile } from "@/lib/booking/phone";
 
 const normalizeLocation = (value: string) => value.trim().toLocaleLowerCase("en-IN").replace(/\s+/g, " ");
 export function createTripSchema(now = new Date()) { return z.object({
-  tripType: z.enum(["one-way", "round-trip", "outstation"]), pickup: z.string().trim().min(2, "Enter a pickup location"), drop: z.string().trim().min(2, "Enter a drop location"),
-  date: z.string().min(1, "Choose a pickup date"), time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a valid pickup time"), returnDate: z.string().optional(), returnTime: z.string().optional(),
+  tripType: z.enum(["one-way", "round-trip", "outstation"]), pickup: z.string().trim().min(2, "Enter a pickup location").max(120, "Keep the pickup under 120 characters"), drop: z.string().trim().min(2, "Enter a drop location").max(120, "Keep the destination under 120 characters"),
+  date: z.string().refine(isValidDateString, "Choose a valid pickup date"), time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a valid pickup time"), returnDate: z.string().optional(), returnTime: z.string().optional(),
   passengers: z.number().int().min(bookingConfig.minPassengers).max(bookingConfig.maxPassengers),
 }).superRefine((value, ctx) => {
   if (normalizeLocation(value.pickup) === normalizeLocation(value.drop)) ctx.addIssue({ code: "custom", path: ["drop"], message: "Pickup and drop must be different" });
   if (value.date && value.time && isPastLocalDateTime(value.date, value.time, now, bookingConfig.timeZone)) ctx.addIssue({ code: "custom", path: ["date"], message: "Pickup must be in the future" });
   if (value.tripType === "round-trip") {
-    if (!value.returnDate) ctx.addIssue({ code: "custom", path: ["returnDate"], message: "Choose a return date" });
+    if (!value.returnDate || !isValidDateString(value.returnDate)) ctx.addIssue({ code: "custom", path: ["returnDate"], message: "Choose a valid return date" });
     if (!value.returnTime || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value.returnTime)) ctx.addIssue({ code: "custom", path: ["returnTime"], message: "Choose a valid return time" });
     if (value.returnDate && value.returnTime && !isAfterLocalDateTime(value.returnDate, value.returnTime, value.date, value.time)) ctx.addIssue({ code: "custom", path: ["returnDate"], message: "Return must be after pickup" });
   }

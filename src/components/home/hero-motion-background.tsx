@@ -1,20 +1,45 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { Car } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
+import { Pause, Play } from "lucide-react";
 import { siteConfig } from "@/config/site";
+
+function useMediaQuery(query: string) {
+  const subscribe = useCallback((callback: () => void) => {
+    const media = window.matchMedia(query);
+    media.addEventListener("change", callback);
+    return () => media.removeEventListener("change", callback);
+  }, [query]);
+  const snapshot = useCallback(() => window.matchMedia(query).matches, [query]);
+  return useSyncExternalStore(subscribe, snapshot, () => false);
+}
+
+export function HeroMotionControls() {
+  const [paused, setPaused] = useState(false);
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  if (reducedMotion) return null;
+
+  return <button type="button" aria-pressed={paused} className="hero-motion-control mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/25 bg-navy-950/80 px-3 text-xs font-bold text-white/80 hover:text-white" onClick={(event) => {
+    const next = !paused;
+    setPaused(next);
+    const section = event.currentTarget.closest("section");
+    if (!section) return;
+    section.dataset.motionPaused = String(next);
+    section.querySelectorAll("video").forEach((video) => {
+      if (next) {
+        video.dataset.resumeMotion = String(!video.paused);
+        video.pause();
+      } else if (video.dataset.resumeMotion === "true") {
+        void video.play().catch(() => undefined);
+      }
+    });
+  }}>{paused ? <Play aria-hidden="true" size={15} /> : <Pause aria-hidden="true" size={15} />}{paused ? "Resume animations" : "Pause animations"}</button>;
+}
 
 export function HeroMotionBackground() {
   const [videoReady, setVideoReady] = useState(false);
-  const connectVideo = useCallback((video: HTMLVideoElement | null) => {
-    if (!video) return;
-    if (video.readyState >= 2) setVideoReady(true);
-    else {
-      video.load();
-      void video.play().catch(() => undefined);
-    }
-  }, []);
-
+  const allowVideo = useMediaQuery("(min-width: 1280px) and (prefers-reduced-motion: no-preference)");
   return (
     <div className="hero-motion pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <svg className="absolute inset-0 size-full" viewBox="0 0 1440 760" preserveAspectRatio="xMidYMid slice">
@@ -73,9 +98,15 @@ export function HeroMotionBackground() {
         </g>
       </svg>
       <div className="hero-video-scene absolute inset-0 hidden overflow-hidden xl:block">
-        <video ref={connectVideo} className={`hero-device-video absolute left-1/2 top-[9rem] h-auto w-[48rem] max-w-none -translate-x-1/2 transition-opacity duration-700 md:top-[7rem] md:w-[72rem] xl:inset-0 xl:size-full xl:translate-x-0 xl:object-cover xl:object-center ${videoReady ? "opacity-100 xl:opacity-70" : "opacity-0"}`} autoPlay muted loop playsInline preload="auto" tabIndex={-1} onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)}>
-          <source src="/media/taxi-hero/taxi-hero.mp4" type="video/mp4" media="(min-width: 1280px)" />
-        </video>
+        {allowVideo && <video className={`hero-device-video absolute inset-0 size-full object-cover object-center transition-opacity duration-700 ${videoReady ? "opacity-70" : "opacity-0"}`} autoPlay muted loop playsInline preload="metadata" tabIndex={-1} onLoadedData={(event) => {
+          setVideoReady(true);
+          if (event.currentTarget.closest('[data-motion-paused="true"]')) {
+            event.currentTarget.dataset.resumeMotion = "true";
+            event.currentTarget.pause();
+          }
+        }} onError={() => setVideoReady(false)}>
+          <source src="/media/taxi-hero/taxi-hero.mp4" type="video/mp4" />
+        </video>}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#061d33_0%,#061d33_24%,rgba(6,29,51,.04)_47%,rgba(6,29,51,.18)_82%,rgba(6,29,51,.56)_100%)] md:bg-[linear-gradient(180deg,#061d33_0%,#061d33_20%,rgba(6,29,51,.04)_45%,rgba(6,29,51,.30)_100%)] xl:bg-[linear-gradient(90deg,#061d33_0%,rgba(6,29,51,.98)_30%,rgba(6,29,51,.58)_58%,rgba(6,29,51,.24)_100%),linear-gradient(180deg,#061d33_0%,rgba(6,29,51,.82)_24%,transparent_58%,rgba(6,29,51,.28)_100%)]" />
         <span className="absolute bottom-3 right-3 rounded-full border border-white/10 bg-navy-950/95 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.12em] text-amber-500 shadow-lg">{siteConfig.shortName}</span>
       </div>
@@ -85,39 +116,24 @@ export function HeroMotionBackground() {
 }
 
 export function HeroTopVideo() {
-  const [videoReady, setVideoReady] = useState(false);
-  const connectVideo = useCallback((video: HTMLVideoElement | null) => {
-    if (!video) return;
-    if (video.readyState >= 2) setVideoReady(true);
-    else {
-      video.load();
-      void video.play().catch(() => undefined);
-    }
-  }, []);
+  const [playing, setPlaying] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mobileViewport = useMediaQuery("(max-width: 1279px)");
 
-  return <div className={`hero-top-video relative mb-7 aspect-video w-full overflow-hidden rounded-2xl border shadow-[0_14px_38px_rgba(0,8,18,.24)] transition-colors duration-700 xl:hidden ${videoReady ? "border-white/10 bg-navy-950" : "border-amber-500/20 bg-[#0b2f4b]"}`} aria-hidden="true">
-    <div className={`absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(251,191,36,.18),rgba(11,47,75,.35)_36%,rgba(6,29,51,.92)_78%)] transition-opacity duration-700 ${videoReady ? "opacity-0" : "animate-pulse opacity-100"}`} />
-    <div className={`absolute inset-0 z-10 overflow-hidden transition-all duration-500 ${videoReady ? "pointer-events-none scale-[1.02] opacity-0" : "scale-100 opacity-100"}`}>
-      <div className="absolute inset-x-0 bottom-[27%] flex h-[34%] items-end justify-around opacity-45">
-        {[38, 58, 43, 72, 50, 64, 40].map((height, index) => <span key={index} className="w-[9%] rounded-t-sm border-t border-white/10 bg-navy-950/80" style={{ height: `${height}%` }} />)}
-      </div>
-      <div className="absolute inset-x-0 bottom-0 h-[30%] skew-y-[-3deg] bg-navy-950/75" />
-      <div className="absolute inset-x-[-8%] bottom-[18%] border-t border-dashed border-white/20" />
-      <div className="taxi-loader-route absolute bottom-[20%] left-[8%] h-px w-[84%] bg-gradient-to-r from-transparent via-amber-500/80 to-transparent" />
-      <div className="taxi-loader-car absolute bottom-[20%] left-0 grid size-10 place-items-center rounded-xl bg-amber-500 text-navy-950 shadow-[0_8px_22px_rgba(244,180,26,.28)] sm:size-12">
-        <Car size={23} strokeWidth={2.4} />
-      </div>
-      <div className="absolute left-1/2 top-[22%] -translate-x-1/2">
-        <div className="flex items-center gap-2.5 whitespace-nowrap rounded-full border border-white/10 bg-navy-950/80 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.1em] text-white/80 shadow-lg backdrop-blur-sm sm:text-xs">
-          <span className="size-1.5 animate-pulse rounded-full bg-amber-500" />
-          Preparing your taxi…
-        </div>
-      </div>
-    </div>
-    <video ref={connectVideo} className={`absolute inset-0 size-full object-contain transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`} autoPlay muted loop playsInline preload="auto" tabIndex={-1} onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)}>
+  return <div className="hero-top-video relative mb-7 aspect-video w-full overflow-hidden rounded-2xl border border-white/15 bg-navy-950 shadow-[0_14px_38px_rgba(0,8,18,.24)] xl:hidden">
+    <Image src="/media/taxi-hero/taxi-poster.webp" alt="" width={960} height={540} sizes="(min-width: 1280px) 1px, (min-width: 768px) calc(100vw - 3rem), calc(100vw - 2rem)" loading="eager" fetchPriority="high" className="absolute inset-0 size-full object-cover" />
+    {playing && mobileViewport ? <video ref={videoRef} className="absolute inset-0 size-full object-contain" autoPlay muted playsInline controls preload="metadata" poster="/media/taxi-hero/taxi-poster.webp" aria-label="Taxi service video" onError={() => { setFailed(true); setPlaying(false); }}>
       <source src="/media/taxi-hero/taxi-hero.mp4" type="video/mp4" />
-    </video>
-    <div className="absolute inset-0 bg-gradient-to-b from-navy-950/25 via-transparent to-navy-950/20" />
-    <span className="absolute bottom-2.5 right-2.5 rounded-full border border-white/10 bg-navy-950/95 px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-[.1em] text-amber-500 shadow-lg sm:bottom-3 sm:right-3 sm:px-3 sm:text-[10px]">{siteConfig.shortName}</span>
+      Your browser cannot play this video.
+    </video> : <>
+      <div className="pointer-events-none absolute inset-0 bg-navy-950/15" aria-hidden="true" />
+      <button type="button" onClick={() => { setFailed(false); setPlaying(true); }} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white" aria-label="Play taxi video">
+        <span className="grid size-12 place-items-center rounded-full border border-white/60 bg-navy-950/85 shadow-lg"><Play aria-hidden="true" size={22} /></span>
+        <span className="rounded-full bg-navy-950/90 px-3 py-1.5 text-xs font-extrabold">Play taxi video</span>
+      </button>
+      <span className="pointer-events-none absolute bottom-2.5 right-2.5 rounded-full border border-white/20 bg-navy-950/95 px-2.5 py-1.5 text-[9px] font-extrabold tracking-[.06em] text-amber-500 sm:text-[10px]">{siteConfig.shortName}</span>
+    </>}
+    {failed && <p role="status" className="absolute inset-x-2 top-2 rounded-lg bg-navy-950/95 p-2 text-center text-xs font-bold text-white">Video unavailable. Select play to try again.</p>}
   </div>;
 }
