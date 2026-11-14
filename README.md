@@ -1,6 +1,8 @@
-# Villupuram Taxi
+# namma oneway drop taxi
 
-Phase 2 design foundation and conversion-focused homepage for a client taxi service in Villupuram, Tamil Nadu.
+A single-page taxi booking website for Villupuram and outstation travel across Tamil Nadu, built with Next.js and React.
+
+The homepage contains trip booking, popular routes, vehicle choices and contact details. Navigation scrolls to sections on the same page, and the booking steps stay within the homepage.
 
 ## Local development
 
@@ -9,41 +11,19 @@ npm install
 npm run dev
 ```
 
-Copy `.env.example` to `.env.local` and replace the placeholder site origin before deployment.
+Open [http://localhost:3000](http://localhost:3000). The main page is `src/app/page.tsx`; business identity and contact details are in `src/config/site.ts`.
 
-Business identity, phone, WhatsApp, rates, operating policies, trust statements and review content remain provisional pending client approval. Central identity values live in `src/config/site.ts`; homepage content lives in `src/data/content.ts`.
+## Configuration
 
-## Getting Started
+The default site origin is `https://www.nammaonewaydroptaxi.com`. Set `NEXT_PUBLIC_SITE_URL` in the deployment environment when using a different canonical origin.
 
-First, run the development server:
+Booking uses development adapters for location suggestions, fare estimates and request submission. Connect production services and configure approved pricing before treating development references as confirmed bookings. Phone and WhatsApp links use the contact details in `src/config/site.ts`.
+
+## Checks
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run typecheck
+npm test
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -1,7 +1,7 @@
 import { BriefcaseBusiness, Building2, CalendarCheck, CarFront, MapPinned, Plane, Repeat2, ShieldCheck, BadgeIndianRupee, Handshake } from "lucide-react";
 export const navigation = [
-  { label: "Home", href: "/" }, { label: "Book Taxi", href: "/book" }, { label: "Tariff", href: "/tariff" },
-  { label: "Services", href: "/services" }, { label: "Routes", href: "/routes" }, { label: "About", href: "/about" }, { label: "Contact", href: "/contact" },
+  { label: "Home", href: "/#home" }, { label: "Book Taxi", href: "/#book" },
+  { label: "Routes", href: "/#routes" }, { label: "Our Fleet", href: "/#fleet" }, { label: "Contact", href: "/#contact" },
 ] as const;
 export const trustItems = [
   { title: "Safe & Secure", note: "Safety-focused travel experience", icon: ShieldCheck }, { title: "Trusted Service", note: "Dependable local taxi service", icon: Handshake },

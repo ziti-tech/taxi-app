@@ -1,8 +1,8 @@
-// Provisional identity and contact values: replace only after client approval.
+// Business identity and contact details used throughout the site.
 type SiteConfig = { businessName: string; shortName: string; url: string; phone: string; whatsapp: string; email: string; address: string; businessHours: string; serviceArea: string };
 export const siteConfig: SiteConfig = {
-  businessName: "Villupuram Taxi", shortName: "Villupuram Taxi",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com",
+  businessName: "namma oneway drop taxi", shortName: "namma oneway drop taxi",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.nammaonewaydroptaxi.com",
   phone: "9884744218", whatsapp: "919884744218", email: "", address: "Villupuram, Tamil Nadu",
   businessHours: "Booking support hours to be confirmed",
   serviceArea: "Villupuram and outstation travel across Tamil Nadu",

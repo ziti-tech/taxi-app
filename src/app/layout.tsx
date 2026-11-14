@@ -10,10 +10,11 @@ import "./globals.css";
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: { default: "Villupuram Taxi | Reliable local & outstation rides", template: `%s | ${siteConfig.shortName}` },
+  applicationName: siteConfig.businessName,
+  title: { default: `${siteConfig.businessName} | One-way & outstation rides`, template: `%s | ${siteConfig.shortName}` },
   description: "Request one-way, round-trip and airport taxis from Villupuram with a simple, comfortable booking experience.",
   alternates: { canonical: "/" },
-  openGraph: { title: "Villupuram Taxi", description: "Reliable local and outstation taxi booking from Villupuram.", url: "/", siteName: siteConfig.shortName, locale: "en_IN", type: "website" },
+  openGraph: { title: siteConfig.businessName, description: "Reliable local and outstation taxi booking from Villupuram.", url: "/", siteName: siteConfig.shortName, locale: "en_IN", type: "website" },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" className={manrope.variable}><body className="font-sans antialiased">
